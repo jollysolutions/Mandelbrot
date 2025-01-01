@@ -1,0 +1,3 @@
+[submodule "examples/magpi_parallel2"]
+	path = examples/magpi_parallel2
+	url = https://github.com/jollysolutions/magpi_parallel2.git
