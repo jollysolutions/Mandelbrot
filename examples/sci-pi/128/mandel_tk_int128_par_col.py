@@ -36,7 +36,7 @@ import gmpy2
 from time import time
 from multiprocessing import Pool,RawArray
 from functools import partial
-import int128_mandel
+import int128_mandel # type: ignore
 
 
 # Defaults conveniently placed at the start
@@ -67,7 +67,7 @@ def init_mandel_write_column(MS_store,bshift_in):
 
 def mandel_calc():
     global M,calculating,q,maxiter,cmap,abort_calc,nproc,MS_store,bshift
-    
+
     chunk=nproc*int(10/nproc)
     if (chunk==0): chunk=nproc
     if (chunk>size): chunk=size
@@ -91,19 +91,19 @@ def mandel_calc():
         if ((remainder>0)and(not abort_calc)):
             i+=chunk
             pool.map(partial(mandel_write_column,xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax,size=size,maxiter=maxiter),range(i,i+remainder))
-        
+
 
     t=time()-t
     q.put(lambda t=t,maxiter=maxiter, size=size:
                  finished_calc(t,maxiter,size))
-    
+
 def col_draw(i,bytes,t):
     global canvas,legend,zoom,saved_cols
     img=tk.PhotoImage(data=bytes).zoom(zoom)
     saved_cols.append(img)
     canvas.create_image((i-9)*zoom,0,anchor="nw",image=img)
     legend.config(text="Calculating: %.1fs"%(t))
-    
+
 def finished_calc(t,maxiter,size):
     global history,legend,M,M_img,calculating,saved_cols,img_bytes,cmap
     global toggle_widgets,back_btn,recalc_btn,imgArea,img_array,sqrtmap
@@ -127,7 +127,7 @@ def finished_calc(t,maxiter,size):
     canvas.itemconfig(imgArea,image=M_img)
     saved_cols=[]
     calculating=False
-    
+
 def recalculate(old_coords=[]):
     global r,coords_label,white_ppm_bytes,ppm_header
     global calculating,M,abort_calc,MS_store
@@ -152,7 +152,7 @@ def recalculate(old_coords=[]):
     M=np.frombuffer(MS_store,dtype=np.float64).reshape(size,size)
     np.copyto(M,255*np.ones((size,size)))
 
-    if (size!=old_size):    
+    if (size!=old_size):
         white=255*np.ones((size,size,3),dtype=np.uint8)
         ppm_header=b"P6\n%i %i\n255\n"%(size,size)
         white_ppm_bytes=ppm_header+white.tobytes()
@@ -197,7 +197,7 @@ def recalculate(old_coords=[]):
 def set_abort_calc():
     global abort_calc
     abort_calc=True
-    
+
 def run_queue():
     global calculating,q,window
     while True:
@@ -220,7 +220,7 @@ def cursor_update(event):
 
 
 class Rubberband():
-    
+
     def __init__(self,widget):
         global size
         self.active=False
@@ -247,7 +247,7 @@ class Rubberband():
     def draw_band(self,x,y,w,h):
         self.band=self.widget.create_rectangle(x-2,y-2,(x+w)+2,(y+h)+2,
                                                width=1,outline='#777')
-        
+
     def reset(self):
         self.clear()
         self.active=False
@@ -272,7 +272,7 @@ class Rubberband():
         self.draw_band(self.stx,self.sty,
                                    self.x-self.stx,self.y-self.sty)
         [new_xmin,new_xmax,new_ymin,new_ymax]=coords
-        
+
     def resize(self,event):
         global zoom
         if (zoom!=self.oldzoom):
@@ -285,7 +285,7 @@ class Rubberband():
                 self.widget.delete(self.band)
                 self.draw_band(self.stx,self.sty,
                                    self.x-self.stx,self.y-self.sty)
-        
+
     def press(self,event):
         x,y=self.widget.canvasx(event.x),self.widget.canvasy(event.y)
         if (self.visible):
@@ -320,10 +320,10 @@ class Rubberband():
             self.dragx,self.dragy=x,y
             self.draw_band(self.stx,self.sty,self.x-self.stx,self.y-self.sty)
             return
-         
+
         self.x,self.y=self.widget.canvasx(event.x),self.widget.canvasy(event.y)
 
-# Constrain to square        
+# Constrain to square
         w=abs(self.stx-self.x)
         h=abs(self.sty-self.y)
         w=min(w,h)
@@ -357,7 +357,7 @@ class Rubberband():
         else:
             self.x=self.widget.canvasx(event.x)
             self.y=self.widget.canvasy(event.y)
-# Constrain to square        
+# Constrain to square
             w=abs(self.stx-self.x)
             h=abs(self.sty-self.y)
             w=min(w,h)
@@ -370,7 +370,7 @@ class Rubberband():
                 self.y=self.sty+h
             else:
                 self.y=self.sty-h
-            
+
         x=min(self.stx,self.x)
         w=abs(self.stx-self.x)
         y=min(self.sty,self.y)
@@ -398,7 +398,7 @@ class Rubberband():
         else:
             self.widget.delete(self.band)
             self.visible=False
-            
+
 def back():
     global new_xmin,new_xmax,new_ymin,new_ymax
     global maxiter,maxiter_entry,bshift,bshift_entry,size
@@ -489,7 +489,7 @@ def input_res(entry):
     res_entry.delete(0,last=tk.END)
     res_entry.insert(tk.END,"%d"%(size))
 
-    
+
 def crc_init_table():
     global crc_table
     crc_table = [0] * 256
@@ -528,7 +528,7 @@ def save_png(array,palette=None):
             (w,h)=array.shape
         except:
             raise IndexError("Unsupported array shape")
-        
+
     if ((d!=1)and(d!=3)and(d!=4)):
         raise IndexError("Unsupported image depth")
     file=filedialog.asksaveasfile(mode="wb",filetypes=[('PNG','*.png')])
@@ -540,7 +540,7 @@ def save_png(array,palette=None):
             raise IndexError("Palette present with 3D array")
         if len(palette.tobytes())>768:
             raise IndexError("Palette too long")
-    
+
 # Init CRC
     crc_init_table()
 # Write PNG magic
@@ -573,7 +573,7 @@ def save_png(array,palette=None):
         buff[17]=2  # RGB
     elif (d==4):
         buff[17]=6  # RGBA
-        
+
     file.write(buff.tobytes());
 
     ccrc=calc_crc(0xffffffff,buff[4:21].tobytes())
@@ -595,8 +595,8 @@ def save_png(array,palette=None):
         ccrc=calc_crc(ccrc,palette.tobytes())
         ccrc=ccrc^0xffffffff
         file.write(ccrc.to_bytes(4,byteorder='big'))
-        
-    
+
+
 # optional tEXt
 #    tEXt=b'Comment\x00(%.12f%+.12fi) to (%.12f%+.12fi) maxiter=%d'%(xmin,ymin,
 #                                                        xmax,ymax,maxiter)
@@ -613,7 +613,7 @@ def save_png(array,palette=None):
     file.write(tEXt)
     ccrc=ccrc^0xffffffff
     file.write(ccrc.to_bytes(4,byteorder='big'))
-    
+
 # IDAT
     dat=np.zeros((size*(d*size+1)),dtype=np.uint8)
     if (d>1):
@@ -625,7 +625,7 @@ def save_png(array,palette=None):
 
     zdat=zlib.compress(dat.tobytes(),level=8)
     zlen=len(zdat)
-        
+
     buff2=b'IDAT'
     ccrc=calc_crc(0xffffffff,buff2)
     file.write(zlen.to_bytes(4,byteorder='big'))
@@ -635,8 +635,8 @@ def save_png(array,palette=None):
     file.write(zdat)
     ccrc=ccrc^0xffffffff
     file.write(ccrc.to_bytes(4,byteorder='big'))
-    
-# IEND                 
+
+# IEND
     buff=np.zeros((8),dtype=np.uint8)
     buff[4]=ord('I')
     buff[5]=ord('E')
@@ -654,18 +654,18 @@ class New_coords():
         global xmin,ymin,xmax,ymax,toggle_widgets,recalc_btn
         self.dialog=dialog=tk.Toplevel(main)
         dialog.title("Coordinates")
-        
+
         self.nxmn,self.nymn,self.nxmx,self.nymx=xmin,ymin,xmax,ymax
 
         x_frame=tk.Frame(dialog)
         x_frame.pack(padx=10,pady=10)
 
         dialog.bind('<Destroy>',self.clean_up)
-        
+
         for w in toggle_widgets:
             w.configure(state=tk.DISABLED)
         recalc_btn.configure(state=tk.DISABLED)
-            
+
         xmin_frame=tk.Frame(x_frame)
         xmin_frame.pack(side=tk.LEFT)
         xmin_label=tk.Label(xmin_frame,text="xmin: ")
@@ -719,7 +719,7 @@ class New_coords():
         str_entry.bind("<Return>", self.str_input_coord)
 
         self.str_entry=str_entry
-        
+
         button_frame=tk.Frame(dialog)
         button_frame.pack(side=tk.BOTTOM,fill=tk.X,pady=10)
         check_btn=tk.Button(button_frame,text="Check",command=self.check_coord)
@@ -740,7 +740,7 @@ class New_coords():
         for w in toggle_widgets:
             w.configure(state=tk.NORMAL)
         recalc_btn.configure(state=tk.NORMAL)
-        
+
     def apply(self):
         global new_xmin,new_ymin,new_xmax,new_ymax
         new_xmin,new_ymin=self.nxmn,self.nymn
@@ -782,14 +782,14 @@ class New_coords():
         for i in range(4):
             self.entries[i].delete(0,last=tk.END)
             self.entries[i].insert(tk.END,("%.14f"%c[i]).rstrip("0"))
-        
+
         entry.insert(tk.END,("(%.14f"%(c[0])).rstrip("0")+
                            ("%+.14f"%(c[1])).rstrip("0")+
                            ("i) to (%.14f"%(c[2])).rstrip("0")+
                            ("%+.14f"%(c[3])).rstrip("0")+"i)")
 
         self.ok_btn.configure(state=tk.DISABLED)
-        
+
 
     def check_coord(self):
         global xmax,xmin,ymax,ymin
@@ -798,7 +798,7 @@ class New_coords():
         if ((self.nxmx==xmax) and (self.nxmn==xmin) and
             (self.nymx==ymax) and (self.nymn==ymin)):
             self.str_input_coord(None)
-        
+
         x_range=self.nxmx-self.nxmn
         y_range=self.nymx-self.nymn
 
@@ -827,7 +827,7 @@ class New_coords():
                            ("%+.14f"%(c[3])).rstrip("0")+"i)")
 
         self.ok_btn.configure(state=tk.NORMAL)
-        
+
     def input_coord(self,event):
         x=99
         entry=event.widget
@@ -836,7 +836,7 @@ class New_coords():
             x=float(entry.get())
         except:
             pass
-        
+
         if abs(x)<2.5:
             c=[self.nxmn,self.nymn,self.nxmx,self.nymx]
             c[index]=int(x*2**bshift)
@@ -879,7 +879,7 @@ def canvas_resize(event):
         M_img=tk.PhotoImage(data=img_bytes).zoom(zoom)
         canvas.configure(width=size*zoom,height=size*zoom)
         canvas.itemconfig(imgArea,image=M_img)
-        
+
 def input_map(event):
     global colours_list,cmap,M,img_bytes,img_array,M_img,ppm_header,zoom
     global sqrtmap
@@ -894,7 +894,7 @@ def input_map(event):
         scale=np.square(scale)
         newmap=cmap(scale)
         cmap=ListedColormap(newmap)
-        
+
     img_array=np.array(255*((cmap(M))[:,:,0:3]),dtype=np.uint8)
     img_bytes=ppm_header+img_array.tobytes()
     M_img=tk.PhotoImage(data=img_bytes).zoom(zoom)
@@ -946,7 +946,7 @@ def fixedtostr(f,prec=-1,sign=0):
     sf=str(f)
     result+=sf[:prec-len(zeros)]
     return result
-      
+
 # Start of main
 
 if __name__ == '__main__':
@@ -966,7 +966,7 @@ if __name__ == '__main__':
     MS_store=RawArray('d',size*size)
     M=np.frombuffer(MS_store,dtype=np.float64).reshape(size,size)
     np.copyto(M,255*np.ones((size,size)))
-    
+
     img_array=255*np.ones((size,size,3),dtype=np.uint8)
     ppm_header=b"P6\n%i %i\n255\n"%(size,size)
     zoom=1
