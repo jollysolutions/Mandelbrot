@@ -1,3 +1,6 @@
 [submodule "examples/magpi_parallel2"]
 	path = examples/magpi_parallel2
 	url = https://github.com/jollysolutions/magpi_parallel2.git
+[submodule "examples/gpu_mandelbrot"]
+	path = examples/gpu_mandelbrot
+	url = https://github.com/jollysolutions/gpu_mandelbrot.git
