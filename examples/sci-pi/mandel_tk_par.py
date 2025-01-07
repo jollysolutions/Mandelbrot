@@ -846,7 +846,7 @@ def input_map(event):
     global colours_list,cmap,M,img_bytes,img_array,M_img,ppm_header,zoom
     global sqrtmap
     try:
-        new_map=cm.get_cmap(colours_list.get(colours_list.curselection()))
+        new_map=colormaps.get_cmap(colours_list.get(colours_list.curselection()))
     except:
         print("Ooops")
         return
