@@ -13,7 +13,7 @@
 #include <numpy/arrayobject.h>
 
 /* Convert a PyLong to an GMP MPZ.
- * Return 0 on sucess, -1 on failure
+ * Return 0 on success, -1 on failure
  */
 static int PyLong2GMP(mpz_t out, PyLongObject *in){
   int i,digits,sign,is_neg;
