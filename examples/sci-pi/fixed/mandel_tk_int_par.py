@@ -6,7 +6,7 @@
 
 # Licence: GPL v3
 #
-# Add mmultiprocesing
+# Add multiprocesing
 #
 # Fork as fixed point integer version
 #
