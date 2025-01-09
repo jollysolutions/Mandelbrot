@@ -108,7 +108,7 @@ def mandelbrot_set(xmin,xmax,ymin,ymax,width,height,maxiter):
 
 def timing(xmin,xmax,ymin,ymax,width,height,maxiter):
     print("xmin : {}, xmax : {}, ymin : {}, ymax : {}, width : {}, height : {}, maxiter : {}".format(xmin,xmax,ymin,ymax,width,height,maxiter))
-    scale = 10
+    scale = 72
     width = width * scale
     height = height * scale
     t = m =time()
@@ -127,7 +127,7 @@ def timing(xmin,xmax,ymin,ymax,width,height,maxiter):
 tt = time()
 for it in [1024, 2048, 4096, 8192]:
     t_it = time()
-    for size in [200, 400, 800]:
+    for size in [100, 200, 400]:
         timing(-2.0,0.5,-1.25,1.25,size,size,it)
         timing(-0.74877,-0.74872,0.06505,0.06510,size,size,it)
     print("it time : ", time ()-t_it)
