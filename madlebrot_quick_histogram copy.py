@@ -24,6 +24,24 @@ def numpy_histogram_colours(arr_in,maxint):
     # arr_in = np.round(arr_float) 
     # Histogram Colours End
 
+@jit(nopython=True, cache=True)
+def numpy_histogram_colours2(arr_in,maxint,histogram,sum):
+    # Histogram Colours Start
+    arr_float = np.zeros_like(arr_in)
+    #sum = np.sum(arr_in)
+    #range = np.arange(maxint+1)
+    #histogram, _ = np.histogram(arr_in, bins = range)#, density=False)
+    histogram_sum = np.cumsum(histogram)
+    for iy, ix in np.ndindex(arr_in.shape):
+        #print(arr[iy, ix])
+        arr_float[iy,ix] = histogram_sum[arr_in[iy,ix]]/sum
+    #with np.nditer(arr, op_flags=['readwrite']) as it:
+    #    for x in it:
+    #        x[...] = histogram_sum[x[...]]
+    arr_in = arr_float
+    # arr_in = np.round(arr_float) 
+    # Histogram Colours End
+
 @cache
 def mandelbrot_image(xmin,xmax,ymin,ymax,width=3,height=3,maxiter=80,cmap='hot'):
     dpi = 72
@@ -92,19 +110,23 @@ def mandelbrot2(c,maxiter):
             yold = y
     return 0
 
-@guvectorize([(complex128[:], int64[:], int64[:])], '(n),()->(n)',target='parallel')
-def mandelbrot_numpy(c, maxit, output):
+@guvectorize([(complex128[:], int64[:], int64[:], int64[:], int64[:])], '(n),()->(n),(),()',target='parallel')
+def mandelbrot_numpy(c, maxit, output, hist, sum):
     maxiter = maxit[0]
+    hist = np.empty(maxiter+1)
+    sum = 0
     for i in range(c.shape[0]):
         output[i] = mandelbrot2(c[i],maxiter)
+        hist[output[i]] = hist[output[i]]
+        sum = sum + output[output[i]]
 
 @cache
 def mandelbrot_set(xmin,xmax,ymin,ymax,width,height,maxiter):
     r1 = np.linspace(xmin, xmax, width, dtype=np.longdouble)
     r2 = np.linspace(ymin, ymax, height, dtype=np.longdouble)
     c = r1 + r2[:,None]*1j
-    n3 = mandelbrot_numpy(c,maxiter)
-    return (r1,r2,n3.T)
+    n3, hist, sum = mandelbrot_numpy(c,maxiter)
+    return (r1, r2, n3.T, hist, sum)
 
 def timing(xmin,xmax,ymin,ymax,width,height,maxiter):
     print("xmin : {}, xmax : {}, ymin : {}, ymax : {}, width : {}, height : {}, maxiter : {}".format(xmin,xmax,ymin,ymax,width,height,maxiter))
@@ -113,12 +135,15 @@ def timing(xmin,xmax,ymin,ymax,width,height,maxiter):
     height = height * scale
     t = m =time()
     
-    _, _ , arr_in = mandelbrot_set(xmin,xmax,ymin,ymax,width,height,maxiter)
+    _, _ , arr_in, hist, sum = mandelbrot_set(xmin,xmax,ymin,ymax,width,height,maxiter)
     print("  mandelbrot : ", time()-m)
 
-    h = time()
+    #h = time()
+    #numpy_histogram_colours(arr_in,maxiter)
+    #print("  histogram : ", time()-h)
+    h2 = time()
     numpy_histogram_colours(arr_in,maxiter)
-    print("  histogram : ", time()-h)
+    print("  histogram2 : ", time()-h2)
     print("total : ", time()-t)
     #print("")
     print("----")
