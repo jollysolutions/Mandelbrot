@@ -1,6 +1,6 @@
 from math import log, log2
 
-MAX_ITER = 8
+MAX_ITER = 80
 
 def mandelbrot(c):
     z = 0
@@ -11,5 +11,5 @@ def mandelbrot(c):
 
     if n == MAX_ITER:
         return MAX_ITER
-    
+
     return n #+ 1 - log(log2(abs(z)))

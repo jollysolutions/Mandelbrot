@@ -20,7 +20,7 @@ static int PyLong2GMP(mpz_t out, PyLongObject *in){
   mpz_t tmp;
 
   if (!PyLong_Check(in)) return -1;
-  
+
   sign=1;
   is_neg=-1;
   digits=in->long_value.lv_tag >> 3;
@@ -64,16 +64,16 @@ static PyObject *mandel_column(PyObject *self, PyObject *args){
   mpz_t x,y,x0,y0,ymin,ymax,x2,y2,mod_test,tmp;
   int i,j;
   npy_intp dims[1];
-  
+
   if (!PyArg_ParseTuple(args,"OOOiil",&x0_py,&ymin_py,&ymax_py,
 			&size,&maxiter,&bshift)){
     fprintf(stderr,"Argument error\n");
     exit(1);
   }
-  
+
   dims[0]=size;
   col=PyArray_SimpleNew(1,dims,NPY_DOUBLE);
-  
+
   mpz_inits(x,y,x0,y0,ymin,ymax,x2,y2,mod_test,tmp,NULL);
 
   if (PyLong2GMP(x0,(PyLongObject*)x0_py)){
@@ -100,7 +100,7 @@ static PyObject *mandel_column(PyObject *self, PyObject *args){
     mpz_mul_ui(y0,y0,(unsigned long)j);
     mpz_tdiv_q_ui(y0,y0,(unsigned long)size);
     mpz_sub(y0,ymax,y0);
-    
+
     mpz_set(x,x0);
     mpz_set(y,y0);
     mpz_mul(x2,x,x);
@@ -125,7 +125,7 @@ static PyObject *mandel_column(PyObject *self, PyObject *args){
     }
     *((double*)PyArray_GETPTR1((PyArrayObject*)col,j))=1-(double)i/maxiter;
   }
-  
+
   mpz_clears(x,y,x0,y0,ymin,ymax,x2,y2,mod_test,tmp,NULL);
 
   return col;

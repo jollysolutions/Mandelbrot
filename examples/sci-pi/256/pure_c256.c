@@ -19,7 +19,7 @@ static __int128 PyLong_AsInt128(PyLongObject *in){
   __int128 out,tmp;
 
   if (!PyLong_Check(in)) return -1;
-  
+
   sign=1;
   is_neg=-1;
   digits=in->long_value.lv_tag >> 3;
@@ -30,7 +30,7 @@ static __int128 PyLong_AsInt128(PyLongObject *in){
     digits=-digits;
   }
   is_neg=(in->long_value.lv_tag & 3) == 2;
-  
+
   out=in->long_value.ob_digit[0];
 
   for(i=1;i<digits;i++){
@@ -122,16 +122,16 @@ static PyObject *mandel_column(PyObject *self, PyObject *args){
   unsigned __int128 x2,y2,mod_test;
   int i,j,y_remainder;
   npy_intp dims[1];
-  
+
   if (!PyArg_ParseTuple(args,"OOOiil",&x0_py,&ymin_py,&ymax_py,
 			&size,&maxiter,&bshift)){
     fprintf(stderr,"Argument error\n");
     exit(1);
   }
-  
+
   dims[0]=size;
   col=PyArray_SimpleNew(1,dims,NPY_DOUBLE);
-  
+
   x0=PyLong_AsInt128((PyLongObject*)x0_py);
   ymin=PyLong_AsInt128((PyLongObject*)ymin_py);
   ymax=PyLong_AsInt128((PyLongObject*)ymax_py);
@@ -141,7 +141,7 @@ static PyObject *mandel_column(PyObject *self, PyObject *args){
 
   ystep=(ymax-ymin)/size;
   y_remainder=(ymax-ymin)%size;
-  
+
   for(j=0;j<size;j++){
 
     y0=ymax-j*ystep-(j*y_remainder)/size;
@@ -165,7 +165,7 @@ static PyObject *mandel_column(PyObject *self, PyObject *args){
     }
     *((double*)PyArray_GETPTR1((PyArrayObject*)col,j))=1-(double)i/maxiter;
   }
-  
+
   return col;
 }
 

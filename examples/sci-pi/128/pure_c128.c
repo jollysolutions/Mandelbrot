@@ -19,16 +19,16 @@ static PyObject *mandel_column(PyObject *self, PyObject *args){
   __int128 x2,y2,mod_test,tmp;
   int i,j;
   npy_intp dims[1];
-  
+
   if (!PyArg_ParseTuple(args,"OOOiil",&x0_py,&ymin_py,&ymax_py,
 			&size,&maxiter,&bshift)){
     fprintf(stderr,"Argument error\n");
     exit(1);
   }
-  
+
   dims[0]=size;
   col=PyArray_SimpleNew(1,dims,NPY_DOUBLE);
-  
+
   x0=PyLong_AsLongLong(x0_py);
   ymin=PyLong_AsLongLong(ymin_py);
   ymax=PyLong_AsLongLong(ymax_py);
@@ -69,7 +69,7 @@ static PyObject *mandel_column(PyObject *self, PyObject *args){
     }
     *((double*)PyArray_GETPTR1((PyArrayObject*)col,j))=1-(double)i/maxiter;
   }
-  
+
   return col;
 }
 

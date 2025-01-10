@@ -15,13 +15,14 @@ def numpy_histogram_colours(arr_in,maxint):
     histogram, _ = np.histogram(arr_in, bins = range)#, density=False)
     histogram_sum = np.cumsum(histogram)
     for iy, ix in np.ndindex(arr_in.shape):
+        #print(iy,ix,histogram_sum[arr_in[iy,ix]]/sum)
         #print(arr[iy, ix])
-        arr_float[iy,ix] = histogram_sum[arr_in[iy,ix]]/sum
+        arr_float[iy,ix] = histogram_sum[arr_in[iy,ix]]/sum*maxint
     #with np.nditer(arr, op_flags=['readwrite']) as it:
     #    for x in it:
     #        x[...] = histogram_sum[x[...]]
-    arr_in = arr_float
-    # arr_in = np.round(arr_float) 
+    return arr_float
+    # arr_in = np.round(arr_float)
     # Histogram Colours End
 
 @cache
@@ -32,7 +33,7 @@ def mandelbrot_image(xmin,xmax,ymin,ymax,width=3,height=3,maxiter=80,cmap='hot')
     x,y,z = mandelbrot_set(xmin,xmax,ymin,ymax,img_width,img_height,maxiter)
     #print(np.min(z),np.max(z))
     t=time()
-    numpy_histogram_colours(z,maxiter)
+    z_h = numpy_histogram_colours(z,maxiter)
     print("histogram : ", time()-t)
     #print(np.min(z),np.max(z))
     fig, ax = plt.subplots(figsize=(width, height),dpi=72)
@@ -43,7 +44,7 @@ def mandelbrot_image(xmin,xmax,ymin,ymax,width=3,height=3,maxiter=80,cmap='hot')
     plt.yticks(ticks, y_ticks)
 
     norm = colors.PowerNorm(0.3)
-    ax.imshow(z.T,cmap=cmap,origin='lower',norm=norm,aspect='equal')
+    ax.imshow(z_h.T,cmap=cmap,origin='lower',norm=norm,aspect='equal')
     plt.show()
 
 @jit(int64(complex128, int64),nopython=True, cache=True)
@@ -108,11 +109,11 @@ def mandelbrot_set(xmin,xmax,ymin,ymax,width,height,maxiter):
 
 def timing(xmin,xmax,ymin,ymax,width,height,maxiter):
     print("xmin : {}, xmax : {}, ymin : {}, ymax : {}, width : {}, height : {}, maxiter : {}".format(xmin,xmax,ymin,ymax,width,height,maxiter))
-    scale = 72
+    scale = 1
     width = width * scale
     height = height * scale
     t = m =time()
-    
+
     _, _ , arr_in = mandelbrot_set(xmin,xmax,ymin,ymax,width,height,maxiter)
     print("  mandelbrot : ", time()-m)
 
@@ -125,15 +126,16 @@ def timing(xmin,xmax,ymin,ymax,width,height,maxiter):
     #print("")
 
 tt = time()
-for it in [1024, 2048, 4096, 8192]:
+for it in [10]: #, 2048, 4096, 8192]:
     t_it = time()
-    for size in [100]: #, 200, 400]:
+    for size in [8]: #, 200, 400]:
         timing(-2.0,0.5,-1.25,1.25,size,size,it)
-        timing(-0.74877,-0.74872,0.06505,0.06510,size,size,it)
+        #timing(-0.74877,-0.74872,0.06505,0.06510,size,size,it)
     print("it time : ", time ()-t_it)
     print("----")
 print("TOTAL : ", time()-tt)
-#input("Press the Enter key to continue: ") 
+mandelbrot_image(-2.0,0.5,-1.25,1.25,width=100,height=100,maxiter=1024,cmap='gnuplot2')
+#input("Press the Enter key to continue: ")
 # size = 200
 # it = 1024
 # print("mandelbrot : ", timeit.timeit('mandelbrot_set(-2.0,0.5,-1.25,1.25,size*72,size*72,it)', number = 1, globals=globals()))

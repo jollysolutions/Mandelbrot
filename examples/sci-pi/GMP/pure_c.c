@@ -25,7 +25,7 @@ static PyObject *mandel(PyObject *self, PyObject *args){
   PyObject *x0_py,*y0_py;
   mpz_t x,y,x0,y0,x2,y2,mod_test,tmp;
   int i;
-  
+
   if (!PyArg_ParseTuple(args,"OOli",&x0_py,&y0_py,&bshift,&maxiter)){
     fprintf(stderr,"Argument error\n");
     exit(1);
@@ -39,7 +39,7 @@ static PyObject *mandel(PyObject *self, PyObject *args){
   /* mod_test = 4<<(2*bshift) */
   mpz_set_ui(mod_test,(unsigned long)4);
   mpz_mul_2exp(mod_test,mod_test,2*bshift);
-  
+
   mpz_set(x,x0);
   mpz_set(y,y0);
   mpz_mul(x2,x,x);
@@ -62,7 +62,7 @@ static PyObject *mandel(PyObject *self, PyObject *args){
     /* y2=y*y */
     mpz_mul(y2,y,y);
   }
-  
+
   mpz_clears(x,y,x0,y0,x2,y2,mod_test,tmp,NULL);
 
   return PyLong_FromLong((long)i);
