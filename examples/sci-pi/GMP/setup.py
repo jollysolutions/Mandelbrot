@@ -11,3 +11,5 @@ setup (name = 'gmp_mandel',
        description = 'A Mandelbrot function in C using GMP',
        ext_modules = [module1],
        requires = ['gmpy2'] )
+
+# python setup.py build_ext --inplace --compiler=mingw32
